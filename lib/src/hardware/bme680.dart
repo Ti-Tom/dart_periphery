@@ -700,12 +700,13 @@ class BME680 {
     setPowerMode(PowerMode.forced);
     var retries = sensorReadRetryCounter;
     do {
-      var buffer = i2c.readBytesReg(i2cAddress, field0Address, fieldLenth);
+      var status = i2c.readBytesReg(i2cAddress, field0Address, 1);
 
       // Set to 1 during measurements, goes to 0 when measurements are completed
-      var newData = (buffer[0] & newDataMask) == 0 ? true : false;
+      var newData = (status[0] & newDataMask) == 0 ? false : true;
 
       if (newData) {
+        var buffer = i2c.readBytesReg(i2cAddress, field0Address, fieldLenth);
         _gasMeasurementIndex = buffer[0] & gasIndexMask;
         _measureIndex = buffer[1];
 
